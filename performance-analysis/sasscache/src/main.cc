@@ -149,6 +149,21 @@ void print_roi_stats(uint32_t cpu, CACHE *cache)
     cout << cache->NAME << " Priority 0 entries : " << cache->num_pr0 << endl;
     cout << cache->NAME << " Inter-Core Interference : " << cache->interference_count << endl;
 
+    #ifdef SASS
+    if (cache->cache_type == IS_LLC && SASS) {
+        double totSize = cache->NUM_SET*cache->NUM_WAY;
+        double totOcc = 0;
+        for (int i=0; i < cache->NUM_SET; i++) {
+            for (int j=0; j < cache->NUM_WAY; j++) {
+                if (cache->block[i][j].hasBeenOccupied[cpu]) {
+                    totOcc++;
+                }
+            }
+        }
+        cout << cache->NAME << " Fraction occupied: " << (totOcc/totSize) << endl;
+    }
+    #endif
+
 }
 
 

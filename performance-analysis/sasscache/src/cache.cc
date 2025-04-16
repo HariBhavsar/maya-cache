@@ -3266,6 +3266,11 @@ if (packet->address == 1084953 && cache_type == IS_LLC){
 	block[set][way].cpu = packet->cpu;
 	block[set][way].instr_id = packet->instr_id;
 	block[set][way].ip = packet->ip; 
+
+	#ifdef SASS
+	block[set][way].hasBeenOccupied[cpu] = true;
+	#endif
+
 	if(cache_type == IS_LLC && (CEASER_S_LLC == 1))
              block[set][way].curr_or_next_key = c_or_n;//which key is used cur_key or next_key
 

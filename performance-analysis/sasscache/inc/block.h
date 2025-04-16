@@ -11,7 +11,9 @@ class BLOCK {
     uint8_t prefetch,
             used;
 
-    bool hasBeen
+    #ifdef SASS
+    bool hasBeenOccupied[NUM_CPUS];
+    #endif
 
     int delta,
         depth,
@@ -56,6 +58,11 @@ class BLOCK {
 	lru = 0;
         curr_or_next_key = 0; //CEASER
 	is_on_remap_recursive_call = 0;
+    #ifdef SASS
+    for (int i=0; i < NUM_CPUS; i++) {
+        hasBeenOccupied[i] = false;
+    }
+    #endif
 
     };
 };

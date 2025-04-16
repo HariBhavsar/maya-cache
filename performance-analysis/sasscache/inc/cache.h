@@ -105,7 +105,6 @@ extern uint32_t PAGE_TABLE_LATENCY, SWAP_LATENCY;
 
 #define MAYA 0
 
-#define SASS 1
 
 ///* Analysing single port
 #if CEASER_LLC == 1 || CEASER_S_LLC == 1
