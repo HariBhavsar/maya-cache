@@ -11,6 +11,8 @@ class BLOCK {
     uint8_t prefetch,
             used;
 
+    bool hasBeen
+
     int delta,
         depth,
         signature,

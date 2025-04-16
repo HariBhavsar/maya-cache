@@ -453,6 +453,11 @@ class CACHE : public MEMORY {
 	pf_late = 0;
     	pf_lower_level = 0;
 	pf_dropped=0;
+    #ifdef SASS
+    if (NAME == "LLC" && SASS) {
+        setKeys();
+    }
+    #endif
     };
 
     // destructor
