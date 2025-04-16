@@ -105,8 +105,7 @@ void CACHE::setKeys() {
   
 	// std::cerr << indicesPerBlock << " " << round1Iterations << " " << NUM_SET << " " << lg2(NUM_SET) <<  lg2(NUM_SET) + coverageBits << std::endl;
 	// exit(1);
-  
-	uint64_t* key = keys[cpu];
+	uint64_t* key = this->keys[cpu];
   
 	uint64_t cl = address >> LOG2_BLOCK_SIZE;
   
@@ -967,7 +966,7 @@ void CACHE::handle_writeback() //Interconnect done
 		uint32_t set;
 		int way;
 		if (this->cache_type == IS_LLC && SASS) {
-			std::vector<uint64_t> indices = get_llc_set(WQ.entry[index].address, WQ.entry[index].cpu);
+			std::vector<uint64_t> indices = get_llc_set(WQ.entry[index].address, writeback_cpu);
 
 			// Check for block across indices
 	  
@@ -1633,13 +1632,13 @@ void CACHE::handle_read()
 			uint32_t set;
 			int way;
 			if (cache_type == IS_LLC && SASS) {
-				std::vector<uint64_t> indices = get_llc_set(WQ.entry[index].address, WQ.entry[index].cpu);
+				std::vector<uint64_t> indices = get_llc_set(RQ.entry[RQ.head].address, RQ.entry[RQ.head].cpu);
 
 				// Check for block across indices
 		  
 				way = -1;
 				for (size_t i=0; i < NUM_WAY; i++) {
-				  if((block[indices[i]][i].address >> LOG2_BLOCK_SIZE) == (WQ.entry[index].address >> LOG2_BLOCK_SIZE)){
+				  if((block[indices[i]][i].address >> LOG2_BLOCK_SIZE) == (RQ.entry[RQ.head].address >> LOG2_BLOCK_SIZE)){
 					  way = i;
 					  set = indices[i];
 					  break;
@@ -2161,13 +2160,13 @@ void CACHE::handle_prefetch()
 			uint32_t set;
 			int way;
 			if (cache_type == IS_LLC && SASS) {
-				std::vector<uint64_t> indices = get_llc_set(WQ.entry[index].address, WQ.entry[index].cpu);
+				std::vector<uint64_t> indices = get_llc_set(PQ.entry[PQ.head].address, PQ.entry[index].cpu);
 
 				// Check for block across indices
 		  
 				way = -1;
 				for (size_t i=0; i < NUM_WAY; i++) {
-				  if((block[indices[i]][i].address >> LOG2_BLOCK_SIZE) == (WQ.entry[index].address >> LOG2_BLOCK_SIZE)){
+				  if((block[indices[i]][i].address >> LOG2_BLOCK_SIZE) == (PQ.entry[index].address >> LOG2_BLOCK_SIZE)){
 					  way = i;
 					  set = indices[i];
 					  break;

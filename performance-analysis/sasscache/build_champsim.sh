@@ -194,7 +194,7 @@ echo "Cores: ${NUM_CORE}"
 echo "CEASER_rq_wq_ratio : ${CEASER_rq_wq_ratio}"
 echo "Remapping : ${remapping}"
  if [ "$NUM_CORE" -gt "1" ]; then
-	BINARY_NAME="${BRANCH}-${L1D_PREFETCHER}-${L2C_PREFETCHER}-${LLC_PREFETCHER}-${LLC_REPLACEMENT}-${CEASER_S_LLC}-${partitions}-${pipelined_encryption_engine}-${CEASER_LATENCY}-${remapping}-${remapping_on_eviction}-${NUM_CORE}core_maya"
+	BINARY_NAME="${BRANCH}-${L1D_PREFETCHER}-${L2C_PREFETCHER}-${LLC_PREFETCHER}-${LLC_REPLACEMENT}-${CEASER_S_LLC}-${partitions}-${pipelined_encryption_engine}-${CEASER_LATENCY}-${remapping}-${remapping_on_eviction}-${NUM_CORE}core_sass"
 else
         BINARY_NAME="${BRANCH}-${L1D_PREFETCHER}-${L2C_PREFETCHER}-${LLC_PREFETCHER}-${LLC_REPLACEMENT}-${CEASER_S_LLC}-${partitions}-${pipelined_encryption_engine}-${CEASER_LATENCY}-${remapping}-${remapping_on_eviction}-${NUM_CORE}core-${LLC_SLICES}core_maya"
  fi

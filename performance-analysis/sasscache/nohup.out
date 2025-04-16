@@ -1,0 +1,158 @@
+
+*** ChampSim Multicore Out-of-Order Simulator ***
+
+Warmup Instructions: 40000000
+Simulation Instructions: 100000000
+Number of CPUs: 8
+threads:1
+
+L1I Configuration:
+L1I_SET:64
+L1I_WAY:8
+L1I_RQ_SIZE:64
+L1I_WQ_SIZE:64
+L1I_PQ_SIZE:8
+L1I_MSHR_SIZE:8
+
+L1D Configuration:
+L1D_SET:64
+L1D_WAY:12
+L1D_RQ_SIZE:64
+L1D_WQ_SIZE:64
+L1D_PQ_SIZE:8
+L1D_MSHR_SIZE:16
+
+L2C Configuration:
+L2C_SET:1024
+L2C_WAY:8
+L2C_RQ_SIZE:32
+L2C_WQ_SIZE:32
+L2C_PQ_SIZE:16
+L2C_MSHR_SIZE:32
+
+LLC Configuration:
+LLC_SET:2048
+LLC_WAY:12
+LLC SLICES:1
+LLC_RQ_SIZE:64
+LLC_WQ_SIZE:64
+LLC_PQ_SIZE:32
+LLC_MSHR_SIZE:64
+
+Interconnect OFF
+Attacker deprioritize is: OFF
+Off-chip DRAM Size: 4096 MB Channels: 1 Width: 64-bit Data Rate: 3200 MT/s
+PAGE SIZE in KB: 4.000000 
+PAGE SIZE in MB: 0.003906 
+PAGE offset in bits: 12 
+CEASER-S_LLC:1
+MAYA : 0
+CEASER_LATENCY:3
+REMAP : ON
+APLR : 100Partitions : 1
+Multi-Step : OFF
+BFS : OFF
+
+CPU 0 runs ../../../../../ICS/traces/sssp-10.trace.gz
+CPU 1 runs ../../../../../ICS/traces/sssp-10.trace.gz
+CPU 2 runs ../../../../../ICS/traces/sssp-10.trace.gz
+CPU 3 runs ../../../../../ICS/traces/sssp-10.trace.gz
+CPU 4 runs ../../../../../ICS/traces/sssp-10.trace.gz
+CPU 5 runs ../../../../../ICS/traces/sssp-10.trace.gz
+CPU 6 runs ../../../../../ICS/traces/sssp-10.trace.gz
+CPU 7 runs ../../../../../ICS/traces/sssp-10.trace.gz
+CPU 0 Bimodal branch predictor
+Initialize SRRIP state
+CPU 1 Bimodal branch predictor
+Initialize SRRIP state
+CPU 2 Bimodal branch predictor
+Initialize SRRIP state
+CPU 3 Bimodal branch predictor
+Initialize SRRIP state
+CPU 4 Bimodal branch predictor
+Initialize SRRIP state
+CPU 5 Bimodal branch predictor
+Initialize SRRIP state
+CPU 6 Bimodal branch predictor
+Initialize SRRIP state
+CPU 7 Bimodal branch predictor
+Initialize SRRIP state
+
+*** ChampSim Multicore Out-of-Order Simulator ***
+
+Warmup Instructions: 40000000
+Simulation Instructions: 100000000
+Number of CPUs: 8
+threads:1
+
+L1I Configuration:
+L1I_SET:64
+L1I_WAY:8
+L1I_RQ_SIZE:64
+L1I_WQ_SIZE:64
+L1I_PQ_SIZE:8
+L1I_MSHR_SIZE:8
+
+L1D Configuration:
+L1D_SET:64
+L1D_WAY:12
+L1D_RQ_SIZE:64
+L1D_WQ_SIZE:64
+L1D_PQ_SIZE:8
+L1D_MSHR_SIZE:16
+
+L2C Configuration:
+L2C_SET:1024
+L2C_WAY:8
+L2C_RQ_SIZE:32
+L2C_WQ_SIZE:32
+L2C_PQ_SIZE:16
+L2C_MSHR_SIZE:32
+
+LLC Configuration:
+LLC_SET:2048
+LLC_WAY:12
+LLC SLICES:1
+LLC_RQ_SIZE:64
+LLC_WQ_SIZE:64
+LLC_PQ_SIZE:32
+LLC_MSHR_SIZE:64
+
+Interconnect OFF
+Attacker deprioritize is: OFF
+Off-chip DRAM Size: 4096 MB Channels: 1 Width: 64-bit Data Rate: 3200 MT/s
+PAGE SIZE in KB: 4.000000 
+PAGE SIZE in MB: 0.003906 
+PAGE offset in bits: 12 
+CEASER-S_LLC:1
+MAYA : 0
+CEASER_LATENCY:3
+REMAP : ON
+APLR : 100Partitions : 1
+Multi-Step : OFF
+BFS : OFF
+
+CPU 0 runs ../../../../../ICS/traces/sssp-10.trace.gz
+CPU 1 runs ../../../../../ICS/traces/sssp-10.trace.gz
+CPU 2 runs ../../../../../ICS/traces/sssp-10.trace.gz
+CPU 3 runs ../../../../../ICS/traces/sssp-10.trace.gz
+CPU 4 runs ../../../../../ICS/traces/sssp-10.trace.gz
+CPU 5 runs ../../../../../ICS/traces/sssp-10.trace.gz
+CPU 6 runs ../../../../../ICS/traces/sssp-10.trace.gz
+CPU 7 runs ../../../../../ICS/traces/sssp-10.trace.gz
+CPU 0 Bimodal branch predictor
+Initialize SRRIP state
+CPU 1 Bimodal branch predictor
+Initialize SRRIP state
+CPU 2 Bimodal branch predictor
+Initialize SRRIP state
+CPU 3 Bimodal branch predictor
+Initialize SRRIP state
+CPU 4 Bimodal branch predictor
+Initialize SRRIP state
+CPU 5 Bimodal branch predictor
+Initialize SRRIP state
+CPU 6 Bimodal branch predictor
+Initialize SRRIP state
+CPU 7 Bimodal branch predictor
+Initialize SRRIP state
