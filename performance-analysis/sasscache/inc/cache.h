@@ -86,7 +86,7 @@ extern uint32_t PAGE_TABLE_LATENCY, SWAP_LATENCY;
 #if NUM_CPUS == NUM_SLICES
  	//Sliced LLC
 //	#define LLC_SET 2048
-	#define LLC_WAY 12
+	#define LLC_WAY 16
 //	#define LLC_RQ_SIZE L2C_MSHR_SIZE //48
 //	#define LLC_WQ_SIZE L2C_MSHR_SIZE //48
 //	#define LLC_PQ_SIZE 32
@@ -95,7 +95,7 @@ extern uint32_t PAGE_TABLE_LATENCY, SWAP_LATENCY;
 #if NUM_CPUS != NUM_SLICES
 	//Single LLC
 //	#define LLC_SET NUM_CPUS*2048
-	#define LLC_WAY 12
+	#define LLC_WAY 16
 //	#define LLC_RQ_SIZE NUM_CPUS*L2C_MSHR_SIZE //48
 //	#define LLC_WQ_SIZE NUM_CPUS*L2C_MSHR_SIZE //48
 //	#define LLC_PQ_SIZE NUM_CPUS*32
@@ -108,7 +108,7 @@ extern uint32_t PAGE_TABLE_LATENCY, SWAP_LATENCY;
 
 ///* Analysing single port
 #if CEASER_LLC == 1 || CEASER_S_LLC == 1
-       #define LLC_LATENCY (20  + CEASER_LATENCY)  // 5 (L1I or L1D) + 10 + 20 = 35 cycles 
+       #define LLC_LATENCY (24  + CEASER_LATENCY)  // 5 (L1I or L1D) + 10 + 20 = 35 cycles 
 #elif MAYA == 1
         #define LLC_LATENCY (24 + 4)
 #else
@@ -155,6 +155,58 @@ class CACHE : public MEMORY {
     //byte k[16], curr_key[16], next_key[16];
     //word k[4*(Nr+1)],curr_key[4*(Nr+1)],next_key[4*(Nr+1)];
     //word cur_keyy[16][4*(Nr+1)],next_keyy[16][4*(Nr+1)];//CEASER-s
+/*------------------------------------CEASER-S CRYPTO FUNCS---------------------------------*/
+#define ROR32(x, r) (((x) >> (r)) | ((x) << (32 - (r))))
+#define ROL32(x, r) (((x) << (r)) | ((x) >> (32 - (r))))
+#define SPECK64R(x, y, k)                                                      \
+  (x = ROR32(x, 8), x += y, x ^= k, y = ROL32(y, 3), y ^= x)
+#define SPECK64RI(x, y, k)                                                     \
+  (y ^= x, y = ROR32(y, 3), x ^= k, x -= y, x = ROL32(x, 8))
+
+void speck64Encrypt(uint32_t* u, uint32_t* v, uint32_t key[])
+{
+  uint32_t i, x = *u, y = *v;
+
+  for (i = 0; i < 27; i++)
+    SPECK64R(x, y, key[i]);
+
+  *u = x;
+  *v = y;
+}
+
+void speck64Decrypt(uint32_t* u, uint32_t* v, uint32_t key[])
+{
+  int32_t i;
+  uint32_t x = *u, y = *v;
+
+  for (i = 26; i >= 0; i--)
+    SPECK64RI(x, y, key[i]);
+
+  *u = x;
+  *v = y;
+}
+
+void speck64ExpandKey(uint32_t K[], uint32_t key[])
+{
+  // ASAN throws stack-buffer-overflow here
+  // with argument ./cachefx -v SquareMult -m attacker -c
+  // configs/cl256/w4/ceasers_2.xml similar problem for CEASER, phantom and
+  // scatter
+  uint32_t i, D = K[3], C = K[2], B = K[1], A = K[0];
+
+  for (i = 0; i < 27; i += 3)
+  {
+    key[i] = A;
+    SPECK64R(B, A, i);
+    key[i + 1] = A;
+    SPECK64R(C, A, i + 1);
+    key[i + 2] = A;
+    SPECK64R(D, A, i + 2);
+  }
+}
+
+/*------------------------------------------------------------------------------------------*/
+
 
     ///////////////////////////////// SASSCACHE ////////////////////////////////////////
     #ifdef SASS
@@ -167,8 +219,11 @@ class CACHE : public MEMORY {
 
     #endif
     ////////////////////////////////////////////////////////////////////////////////////
-
-    uint8_t k[16], curr_keys[16][16], next_keys[16][16], curr_key[16], next_key[16];
+    // changing curr_keys
+    uint32_t* curr_keys[16];
+    uint32_t* next_keys[16];
+    uint32_t* curr_key,*next_key;
+    uint32_t k[27];
     uint32_t ceaser_s_set[16],ceaser_s_next_set[16],c_or_n=0;//CEASER-S
     int partitions; //16 for scatter cache 2 for CEASER_S
     int llc_queue_turn=0,SLICE_NUM = 0;
@@ -250,6 +305,14 @@ class CACHE : public MEMORY {
                 roi_miss_penalty[NUM_CPUS][NUM_TYPES];
 
     uint64_t total_miss_latency[NUM_CPUS], roi_miss_latency[NUM_CPUS];
+
+    void initKeys(uint32_t** key) {
+        uint32_t K[] = {0x06FADE60, 0xCAB4BEEF, 0x04866840, 0x80866808};
+
+        *key = new uint32_t [27];
+
+        speck64ExpandKey(K, *key);
+    }
 
     // constructor
     CACHE(string v1, uint32_t v2, int v3, uint32_t v4, uint32_t v5, uint32_t v6, uint32_t v7, uint32_t v8) 
@@ -333,13 +396,17 @@ class CACHE : public MEMORY {
         //              curr_or_next_key[i][j] = 0;
 	for(uint32_t i=0; i<16 ; i++)
 	{
-		for(uint32_t j=0; j<16; j++)
-		{
-			curr_keys[i][j] = rand() % 256;
-			next_keys[i][j] = rand() % 256;
-		}
-		curr_key[i] = rand() % 256;
-		next_key[i] = rand() % 256;
+        initKeys(&curr_keys[i]);
+        initKeys(&next_keys[i]);
+		// for(uint32_t j=0; j<16; j++)
+		// {
+		// 	curr_keys[i][j] = rand() % 256;
+		// 	next_keys[i][j] = rand() % 256;
+		// }
+        initKeys(&curr_key);
+        initKeys(&next_key);
+		// curr_key[i] = rand() % 256;
+		// next_key[i] = rand() % 256;
 	}
 
 	for(int i=0;i<2048;i++)
@@ -547,7 +614,7 @@ class CACHE : public MEMORY {
 	     uint32_t remap_find_victim(uint32_t cpu, uint64_t instr_id, uint32_t set, const BLOCK *current_set, uint64_t ip, uint64_t full_addr, uint32_t type,int part);
 	     //CEASER-S Functions 
              uint64_t	getDecryptedAddress(uint32_t set, uint32_t way);
-             uint64_t   getEncryptedAddress(uint64_t address, uint32_t current_cpu, uint8_t* key, uint32_t add_latency);
+             uint64_t   getEncryptedAddress(uint64_t address, uint32_t current_cpu, uint32_t* key, uint32_t add_latency);
 	     
              uint64_t bitset42_to_uint64(bitset<42> b);
              void check_llc_access();
