@@ -103,7 +103,7 @@ extern uint32_t PAGE_TABLE_LATENCY, SWAP_LATENCY;
  // 5 (L1I or L1D) + 10 + 20 = 35 cycle
 #endif
 
-#define MIRAGE 0
+#define MIRAGE 1
 
 ///* Analysing single port
 #if CEASER_LLC == 1 || CEASER_S_LLC == 1
