@@ -108,7 +108,7 @@ extern uint32_t PAGE_TABLE_LATENCY, SWAP_LATENCY;
 
 ///* Analysing single port
 #if CEASER_LLC == 1 || CEASER_S_LLC == 1
-       #define LLC_LATENCY (24  + CEASER_LATENCY)  // 5 (L1I or L1D) + 10 + 20 = 35 cycles 
+       #define LLC_LATENCY (24  + 4)  // 5 (L1I or L1D) + 10 + 20 = 35 cycles 
 #elif MAYA == 1
         #define LLC_LATENCY (24 + 4)
 #else
@@ -225,7 +225,7 @@ void speck64ExpandKey(uint32_t K[], uint32_t key[])
     uint32_t* curr_key,*next_key;
     uint32_t k[27];
     uint32_t ceaser_s_set[16],ceaser_s_next_set[16],c_or_n=0;//CEASER-S
-    int partitions = 2; //16 for scatter cache 2 for CEASER_S
+    int partitions = 1; //16 for scatter cache 2 for CEASER_S
     int llc_queue_turn=0,SLICE_NUM = 0;
     uint64_t cache_stall_cycle, encryption_stall_cycle; // To stall cache while remapping
     uint64_t decryption_stall_cycle;

@@ -108,7 +108,7 @@ extern uint32_t PAGE_TABLE_LATENCY, SWAP_LATENCY;
 
 ///* Analysing single port
 #if CEASER_LLC == 1 || CEASER_S_LLC == 1
-       #define LLC_LATENCY (24  + CEASER_LATENCY)  // 5 (L1I or L1D) + 10 + 20 = 35 cycles 
+       #define LLC_LATENCY (24  + 4)  // 5 (L1I or L1D) + 10 + 20 = 35 cycles 
 #elif MAYA == 1
         #define LLC_LATENCY (24 + 4)
 #else
@@ -221,6 +221,7 @@ void speck64ExpandKey(uint32_t K[], uint32_t key[])
     ////////////////////////////////////////////////////////////////////////////////////
     // changing curr_keys
     uint32_t* curr_keys[16];
+    uint32_t K[4] = {0x06FADE60, 0xCAB4BEEF, 0x04866840, 0x80866808};
     uint32_t* next_keys[16];
     uint32_t* curr_key,*next_key;
     uint32_t k[27];
@@ -307,11 +308,16 @@ void speck64ExpandKey(uint32_t K[], uint32_t key[])
     uint64_t total_miss_latency[NUM_CPUS], roi_miss_latency[NUM_CPUS];
 
     void initKeys(uint32_t** key) {
-        uint32_t K[] = {0x06FADE60, 0xCAB4BEEF, 0x04866840, 0x80866808};
+        
 
         *key = new uint32_t [27];
 
         speck64ExpandKey(K, *key);
+        for (uint32_t i=0; i < 4; i++) {
+          for (uint32_t j=0; j < 4; j++) {
+            K[i] ^= (rand() % 256) << (j * 8);
+          }
+        }
     }
 
     // constructor

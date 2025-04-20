@@ -9,7 +9,7 @@ fi
 BINARY=${1}
 N_WARM=${2}
 N_SIM=${3}
-TRACE_DIR=$(pwd)/../traces/spec
+TRACE_DIR=$(pwd)/../../../../../spec
 OPTION=${4}
 
 if [ -z $TRACE_DIR ]; then
@@ -34,7 +34,10 @@ if ! [[ $N_SIM =~ $re ]] || [ -z $N_SIM ]; then
     exit 1
 fi
 
-mkdir -p $(pwd)/results/${OPTION}
+SCRIPT_PATH=$(pwd)
+
+RESULTS_DIR=$(pwd)/results/${OPTION}
+mkdir -p "$RESULTS_DIR"
 
 cd $TRACE_DIR
 
@@ -42,9 +45,9 @@ for TRACE in *;
 do
     if [ "$TRACE" != "wget-log" ]
     then
-	name=${TRACE%.champsimtrace.xz}
-	(./../../mirage/${BINARY} -warmup_instructions ${N_WARM}000000 -simulation_instructions ${N_SIM}000000 -traces ${TRACE_DIR}/${TRACE} ${TRACE_DIR}/${TRACE} ${TRACE_DIR}/${TRACE} ${TRACE_DIR}/${TRACE} ${TRACE_DIR}/${TRACE} ${TRACE_DIR}/${TRACE} ${TRACE_DIR}/${TRACE} ${TRACE_DIR}/${TRACE}) > $(pwd)/../../mirage/results/${OPTION}/${name}_${N_WARM}M_${N_SIM}M.txt &
-    else
-	continue
+        echo ${TRACE}
+        name=${TRACE%.champsimtrace.xz}
+        nohup ${SCRIPT_PATH}/${BINARY} -warmup_instructions ${N_WARM}000000 -simulation_instructions ${N_SIM}000000 -traces ${TRACE_DIR}/${TRACE} ${TRACE_DIR}/${TRACE} ${TRACE_DIR}/${TRACE} ${TRACE_DIR}/${TRACE} ${TRACE_DIR}/${TRACE} ${TRACE_DIR}/${TRACE} ${TRACE_DIR}/${TRACE} ${TRACE_DIR}/${TRACE} > "${RESULTS_DIR}/${name}_${N_WARM}M_${N_SIM}M.txt" &
+        # exit
     fi
 done
