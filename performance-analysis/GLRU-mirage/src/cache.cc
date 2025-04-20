@@ -2477,7 +2477,7 @@ uint32_t CACHE::get_tag_set(uint64_t address)
 
         #endif
         uint64_t addr1,addr2;
-        uint8_t *cur_k,*next_k;
+        uint32_t *cur_k,*next_k;
         int encrypt_cost=0,part=0;
                 cur_k=curr_keys[part];
                 next_k=next_keys[part];
@@ -2505,7 +2505,7 @@ uint32_t CACHE::get_ceaser_s_set(uint64_t address)
 		
        	#endif
        	uint64_t addr1,addr2;
-	uint8_t *cur_k,*next_k;
+	uint32_t *cur_k,*next_k;
       	int encrypt_cost=0;
        	for(int part=0;part<partitions;part++)
 	{
@@ -3497,7 +3497,7 @@ uint64_t CACHE::bitset42_to_uint64(bitset<42> b)
 	return number;
 }
 
-uint64_t CACHE::getEncryptedAddress(uint64_t pla,uint32_t current_cpu, uint8_t *key,uint32_t add_latency)
+uint64_t CACHE::getEncryptedAddress(uint64_t pla,uint32_t current_cpu, uint32_t *key,uint32_t add_latency)
 { //Uses PRINCE to encrypte pla based on the key
 
 	#ifdef No_Randomization
@@ -3518,17 +3518,24 @@ uint64_t CACHE::getEncryptedAddress(uint64_t pla,uint32_t current_cpu, uint8_t *
         	#endif
 	}
 
-	for (int i=0; i <8 ; i++)
-	{
-		in[i] = pla >> (7-i)*8;
-		in[i] = in[i] % 256;
-	}
-	out = p.cipher(in,key);
-	for(uint32_t i=0; i<8; i++)
-	{
-		ela +=  uint64_t(out[7-i]) << 8*i; 
-	}
-	return ela;
+/*
+
+	The following is copied from cachefx's implementation of ceaser-s
+
+*/
+	uint64_t v, tweak;
+	uint32_t* vPtr = (uint32_t*)&v;
+
+	v = pla & 0xFFFFFFFFFFFFFFFF;
+	tweak = (0xFF & 0xFF) * 0x0101010101010101; // in our implementation, keys change on partitions soooooo for now just fixing the partition in tweak
+
+	// Tweak via XEX construction
+
+	v ^= tweak;
+	speck64Encrypt(vPtr + 0, vPtr + 1, key);
+	v ^= tweak;
+
+	return v;
 }
 uint64_t CACHE::getDecryptedAddress(uint32_t Sptr,uint32_t way)
 {
